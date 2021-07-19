@@ -27,7 +27,7 @@ class Users(Model):
 
     class Meta:
         model_metadata_class = ThreadSafeDatabaseMetadata
-        # database = db
+        database = db
 
 
 db.create_tables([Users], safe=True)

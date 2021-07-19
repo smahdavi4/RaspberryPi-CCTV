@@ -2,7 +2,7 @@ import logging
 import threading
 import time
 import argparse
-
+import models
 from tgbot import start_bot
 
 logging.basicConfig(filename='bog.log', format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",

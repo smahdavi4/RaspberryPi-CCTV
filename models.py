@@ -1,6 +1,6 @@
 import threading
 
-from peewee import Model, CharField, BooleanField, SqliteDatabase, Metadata
+from peewee import Model, CharField, BooleanField, SqliteDatabase, Metadata, TimeField
 
 db = SqliteDatabase('cctv.db')
 
@@ -30,4 +30,30 @@ class Users(Model):
         database = db
 
 
-db.create_tables([Users], safe=True)
+class Schedules(Model):
+    Sunday = "Sunday"
+    Monday = "Monday"
+    Tuesday = "Tuesday"
+    Wednesday = "Wednesday"
+    Thursday = "Thursday"
+    Friday = "Friday"
+    Saturday = "Saturday"
+    All = "All"
+    WEEKDAYS = (
+        Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, All
+    )
+
+    weekday = CharField(max_length=20, choices=WEEKDAYS)
+    start_time = TimeField()
+    end_time = TimeField()
+
+    def __repr__(self):
+        return f"{self.id} - {str(self.start_time)[:5]} - {str(self.end_time)[:5]} - {self.weekday}"
+
+    class Meta:
+        model_metadata_class = ThreadSafeDatabaseMetadata
+        database = db
+
+
+def init_db():
+    db.create_tables([Users, Schedules], safe=True)

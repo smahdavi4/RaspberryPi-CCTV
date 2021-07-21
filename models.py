@@ -40,7 +40,7 @@ class Schedules(Model):
     Saturday = "Saturday"
     All = "All"
     WEEKDAYS = (
-        Sunday, Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, All
+        Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday, All
     )
 
     weekday = CharField(max_length=20, choices=WEEKDAYS)

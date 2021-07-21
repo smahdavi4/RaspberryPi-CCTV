@@ -3,6 +3,7 @@ import threading
 import time
 import argparse
 from models import init_db, Schedules
+from raspberry import cctv
 
 from tgbot.tg_poller import start_bot
 from tgbot.tg_sender import set_bot
@@ -24,5 +25,6 @@ if __name__ == '__main__':
     init_db()
     set_bot(args.bot_token)
     threading.Thread(target=start_bot, args=(args.bot_token,)).start()
+    threading.Thread(target=cctv.start_watching).start()
     while True:
         time.sleep(10)

@@ -10,3 +10,7 @@ def set_bot(bot_token):
 
 def send_message(chat_id, message):
     tg_bot.send_message(chat_id=chat_id, text=message)
+
+
+def send_image(chat_id, image_data, caption):
+    tg_bot.send_photo(chat_id, image_data, caption)

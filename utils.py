@@ -59,6 +59,12 @@ def is_user_active(chat_id):
         return False
 
 
+def get_subscribers():
+    active_users = list(Users.select().where(Users.is_active == True))
+    chat_ids = [user.chat_id for user in active_users]
+    return chat_ids
+
+
 def delete_user(chat_id):
     chat_id = str(chat_id)
     try:

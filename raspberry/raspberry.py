@@ -3,6 +3,7 @@ import time
 from datetime import datetime
 
 from models import Schedules
+from server_utils import server_uploader
 from tgbot.tg_sender import send_image
 from utils import get_schedules, get_subscribers
 
@@ -28,6 +29,8 @@ class CCTV:
         return False
 
     def braodcast_photo(self, photo_data):
+        server_uploader.send_image(image_data=photo_data, image_date=datetime.now())
+        return # TODO: Fix it
         for chat_id in get_subscribers():
             try:
                 send_image(chat_id=chat_id, image_data=photo_data, caption="Hi")

@@ -4,6 +4,7 @@ import time
 import argparse
 from models import init_db, Schedules
 from raspberry import cctv
+from server_utils import server_uploader
 
 from tgbot.tg_poller import start_bot
 from tgbot.tg_sender import set_bot
@@ -15,6 +16,7 @@ logging.basicConfig(filename='bog.log', format="%(asctime)s - %(name)s - %(level
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Parameters to be given to telegram bot.")
     parser.add_argument("--bot-token", type=str, required=True, help="Telegram Bot Token.")
+    parser.add_argument("--server-addr", type=str, required=True, help="Server Address to send photos.")
     args = parser.parse_args()
 
     if len(list(Schedules.select())) == 0:
@@ -24,6 +26,7 @@ if __name__ == '__main__':
 
     init_db()
     set_bot(args.bot_token)
+    server_uploader.initialize(bot_token=args.bot_token, server_address=args.server_addr)
     threading.Thread(target=start_bot, args=(args.bot_token,)).start()
     threading.Thread(target=cctv.start_watching).start()
     while True:

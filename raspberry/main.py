@@ -1,4 +1,5 @@
 import logging
+import sys
 import threading
 import time
 import argparse
@@ -10,8 +11,12 @@ from tgbot.tg_poller import start_bot
 from tgbot.tg_sender import set_bot
 from utils import create_schedule
 
-logging.basicConfig(filename='bog.log', format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-                    level=logging.INFO)
+file_handler = logging.FileHandler(filename='bog.log')
+stdout_handler = logging.StreamHandler(sys.stdout)
+handlers = [file_handler, stdout_handler]
+
+logging.basicConfig(format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+                    level=logging.INFO, handlers=handlers)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="Parameters to be given to telegram bot.")

@@ -17,6 +17,9 @@ from utils import get_schedules, get_subscribers
 
 class ImageManager:
     MAX_IMAGE_BUFFER = 20
+    IMAGE_QUANTIZATION_BINS = np.arange(0, 256, 30)
+    NEW_IMAGE_THRESHOLD = 0.1
+    SUSPICIOUS_IMAGE_THRESHOLD = 0.25
 
     def __init__(self):
         self.images = []
@@ -24,28 +27,38 @@ class ImageManager:
     def clear(self):
         self.images.clear()
 
+    def quantize(self, arr_rgb):
+        bins = ImageManager.IMAGE_QUANTIZATION_BINS
+        arr = arr_rgb.mean(axis=2)
+        inds = np.digitize(arr, bins)
+        return bins[inds]
+
+    def diff_images(self, im1, im2):
+        diff_num = (im1 != im2).sum() / np.prod(im1.shape)
+        diff_pix = np.abs(im1 - im2).sum()
+        return diff_pix, diff_num
+
     def next_image(self, new_image: np.ndarray):
-        self.images.append(new_image)
+        self.images.append(self.quantize(new_image))
         # np.save("{}.npy".format(datetime.now().strftime('%d-%m-%Y-%H-%M-%S')), new_image)
         if len(self.images) > ImageManager.MAX_IMAGE_BUFFER:
             self.images.pop(0)
 
     def is_image_new(self, new_image: np.ndarray):
+        quantized_img = self.quantize(new_image)
         if len(self.images) == 0:
             return True
         last_image = self.images[-1]
-        difference = (np.abs(new_image - last_image) > 150).sum()
-        logging.info("sum pix: {}".format(difference))
-        return difference > 10
+        _, diff_num_pixels = self.diff_images(quantized_img, last_image)
+        return diff_num_pixels > ImageManager.NEW_IMAGE_THRESHOLD
 
     def is_image_suspicious(self, new_image: np.ndarray):
+        quantized_img = self.quantize(new_image)
         if len(self.images) == 0:
             return False
         last_image = self.images[-1]
-        img_num_pixels = np.prod(last_image.size)
-        diff_pixel_num = (np.abs(new_image - last_image) > 150).sum()
-        logging.info("prop pix: {}".format(diff_pixel_num / img_num_pixels))
-        return diff_pixel_num / img_num_pixels > 0.02  # At least 2% difference
+        _, diff_num_pixels = self.diff_images(quantized_img, last_image)
+        return diff_num_pixels > ImageManager.SUSPICIOUS_IMAGE_THRESHOLD
 
 
 class CCTV:

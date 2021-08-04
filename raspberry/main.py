@@ -24,11 +24,6 @@ if __name__ == '__main__':
     parser.add_argument("--server-addr", type=str, required=True, help="Server Address to send photos.")
     args = parser.parse_args()
 
-    if len(list(Schedules.select())) == 0:
-        create_schedule(Schedules.Sunday, "10:10", "20:20")
-        create_schedule(Schedules.Monday, "10:10", "20:20")
-        create_schedule(Schedules.All, "6:00", "11:00")
-
     init_db()
     set_bot(args.bot_token)
     server_uploader.initialize(bot_token=args.bot_token, server_address=args.server_addr)
